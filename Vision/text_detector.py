@@ -5,6 +5,7 @@ import time
 from imutils.object_detection import non_max_suppression
 import pytesseract
 
+
 model_path = "Vision/dnn/frozen_east_text_detection.pb"
 
 text_detector = cv.dnn.readNet(model_path)
@@ -24,7 +25,7 @@ while True:
         break
 
     (H,W) = frame.shape[:2]
-    small_frame = cv.resize(frame,(64,64))
+    small_frame = cv.resize(frame,(320,320))
     (smallH,smallW) = small_frame.shape[:2]
 
     rW = W / float(smallW)
@@ -94,7 +95,7 @@ while True:
         endX = int(endX * rW)
         endY = int(endY * rH)
         # draw the bounding box on the image
-        region = frame[startY:endY,startX:endX]
+        region = frame[max(min(startY, H),0):max(min(endY, H), 0),max(min(startX, W), 0):max(min(endX, W), 0)]
         configuration = ("-l eng --oem 1 --psm 8")
         text = pytesseract.image_to_string(region,config=configuration)
         cv.putText(frame, text, (startX, startY - 30),
